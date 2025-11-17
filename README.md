@@ -81,3 +81,116 @@ Each boilerplate comes with it's own flavor of libraries and setup, check out ot
 ## Contributing
 
 All contributions are welcome!
+
+# Лабораторно-практична робота №5: Розширення бекенд-додатку та REST API
+
+## Тема: Реалізація REST API для управління готельною системою (Hotel Management System)
+
+### Реалізовані Сутності та Зв'язки
+
+На основі проєкту бази даних готельної системи були
+реалізовані ключові сутності та їхні реляційні зв'язки
+за допомогою декораторів TypeORM.
+
+- Hotel - виступає центральною сутністю, що має зв'язки
+  @OneToMany з більшістю інших сутностей. Це дозволяє
+  при запиті одного готелю одразу отримувати всі його
+  ресурси
+- Client - сутність, що зберігає інформацію про гостей,
+  включаючи first_name, last_name, а також унікальні
+  phone та email. Ключовим зв'язком є One-to-Many до Booking,
+  що дозволяє відстежувати всі бронювання, здійснені
+  конкретним клієнтом.
+- Room описує конкретні номери. Ключові поля включають
+  унікальний room_number, price_per_night та capacity.
+  Поле comfort_level та status мають строгі обмеження
+  @Check. Сутність має зв'язок Many-to-One до Hotel,
+  що вказує, якому саме готелю належить цей номер.
+- Employee - містить дані про персонал. Подібно до Room, вона має зв'язок
+  Many-to-One до Hotel, вказуючи місце роботи співробітника. Зв'язок
+  реалізовано з опцією onDelete: 'CASCADE' для підтримки цілісності даних.
+- Service - сутність, що описує додаткові послуги,
+  які може надавати готель. Вона також має зв'язок
+  Many-to-One до Hotel, прив'язуючи послугу до конкретного закладу.
+- Booking є транзакційною сутністю, яка фіксує факт
+  бронювання. Вона є ключовою для реляційної моделі,
+  оскільки має три зв'язки Many-to-One, що створюють композитний зв'язок:до Hotel (де відбулося бронювання),
+  до Client (хто забронював), до Room (який номер було заброньовано).
+
+### Реалізовані API ендпоінти
+
+Для сутностей Hotel та Client реалізовано повний набір CRUD-операцій.
+
+#### Ендпоінти для управління Готелями
+
+- POST /api/v1/hotels - cтворення нового готелю
+- GET /api/v1/hotels - отримання списку всіх готелів
+  (включає пов'язані: rooms, employees, services, bookings)
+- GET /api/v1/hotels/{id} - отримання готелю за ID
+  (включає пов'язані: rooms, employees, services, bookings)
+- PATCH /api/v1/hotels/{id} - оновлення інформації про готель за ID
+- DELETE /api/v1/hotels/{id} - видалення готелю за ID
+
+#### Ендпоінти для управління Клієнтами
+
+- POST /api/v1/clients - створення нового клієнта
+- GET /api/v1/clients - отримання списку всіх клієнтів(включає пов'язані: bookings)
+- GET /api/v1/clients/{id} - отримання клієнта за ID(включає пов'язані: bookings)
+- PATCH /api/v1/clients/{id} - оновлення інформації про клієнта за ID
+- DELETE /api/v1/clients/{id} - видалення клієнта за ID
+
+### Тестування API через Postman
+
+Нижче наведені скріншоти відповідно
+
+### Готель
+
+#### POST /api/v1/hotels
+
+![create hotel](images/pw-5/hotel_create.png)
+
+#### GET /api/v1/hotels
+
+![get all hotels](images/pw-5/hotel_get_all(1).png)
+![get all hotels](images/pw-5/hotel_get_all(2).png)
+![get all hotels](images/pw-5/hotel_get_all(3).png)
+![get all hotels](images/pw-5/hotel_get_all(4).png)
+
+#### GET /api/v1/hotels/{id}
+
+![get hotel by id](images/pw-5/hotel_get_by_id(1).png)
+![get hotel by id](images/pw-5/hotel_get_by_id(2).png)
+![get hotel by id](images/pw-5/hotel_get_by_id(3).png)
+![get hotel by id](images/pw-5/hotel_get_by_id(4).png)
+
+#### PATCH /api/v1/hotels/{id}
+
+![update hotel](images/pw-5/hotel_update.png)
+
+#### DELETE /api/v1/hotels/{id}
+
+![delete hotel](images/pw-5/hotel_delete.png)
+
+### Клієнт
+
+#### POST /api/v1/clients
+
+![create client](images/pw-5/client_create.png)
+
+#### GET /api/v1/clients
+
+![get all clients](images/pw-5/client_get_all(1).png)
+![get all clients](images/pw-5/client_get_all(2).png)
+![get all clients](images/pw-5/client_get_all(3).png)
+
+#### GET /api/v1/clients/{id}
+
+![get client by id](images/pw-5/client_get_by_id.png)
+
+#### PATCH /api/v1/clients/{id}
+
+![update client](images/pw-5/client_update.png)
+
+#### DELETE /api/v1/clients/{id}
+
+![delete client](images/pw-5/client_delete.png)
