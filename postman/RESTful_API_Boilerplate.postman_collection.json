@@ -359,7 +359,154 @@
         }
       ],
       "protocolProfileBehavior": {}
+    },
+    {
+      "name": "/hotels",
+      "item": [
+        {
+          "name": "POST /hotels — Create Hotel",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "name": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "{{language}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Grand Kyiv Hotel\",\n  \"location\": \"Khreshchatyk St, 1, Kyiv, Ukraine\",\n  \"description\": \"Luxury hotel in the heart of Kyiv\",\n  \"policy\": \"Check-in: 14:00, Check-out: 12:00\",\n  \"stars\": 5\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/hotels",
+              "host": ["{{baseUrl}}"],
+              "path": ["hotels"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /hotels — List All Hotels (with relations)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "{{language}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/hotels",
+              "host": ["{{baseUrl}}"],
+              "path": ["hotels"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /hotels/:id — Get Hotel by ID (with relations)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "{{language}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/hotels/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["hotels", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /hotels/:id — Update Hotel",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "name": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "{{language}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"stars\": 4,\n  \"description\": \"Updated description\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/hotels/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["hotels", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /hotels/:id — Delete Hotel",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "{{language}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/hotels/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["hotels", "1"]
+            }
+          },
+          "response": []
+        }
+      ],
+      "protocolProfileBehavior": {}
     }
   ],
   "protocolProfileBehavior": {}
 }
+
