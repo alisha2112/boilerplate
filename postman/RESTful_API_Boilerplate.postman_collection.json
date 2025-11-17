@@ -505,8 +505,153 @@
         }
       ],
       "protocolProfileBehavior": {}
+    },
+    {
+      "name": "/clients",
+      "item": [
+        {
+          "name": "POST /clients — Create Client",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "name": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "{{language}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Ivan\",\n  \"middle_name\": \"Petrovych\",\n  \"last_name\": \"Shevchenko\",\n  \"phone\": \"+380991234567\",\n  \"email\": \"ivan.shevchenko@example.com\",\n  \"is_registered\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/clients",
+              "host": ["{{baseUrl}}"],
+              "path": ["clients"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /clients — List All Clients (with bookings)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "{{language}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/clients",
+              "host": ["{{baseUrl}}"],
+              "path": ["clients"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /clients/:id — Get Client by ID (with bookings)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "{{language}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/clients/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["clients", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /clients/:id — Update Client",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "name": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "{{language}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"ivan.newemail@example.com\",\n  \"is_registered\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/clients/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["clients", "1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /clients/:id — Delete Client",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept-Language",
+                "value": "{{language}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/clients/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["clients", "1"]
+            }
+          },
+          "response": []
+        }
+      ],
+      "protocolProfileBehavior": {}
     }
   ],
   "protocolProfileBehavior": {}
 }
-
