@@ -194,3 +194,153 @@ All contributions are welcome!
 #### DELETE /api/v1/clients/{id}
 
 ![delete client](images/pw-5/client_delete.png)
+
+
+# Лабораторно-практична робота №6: Впровадження сервісного шару, валідації та DTO
+
+### Роль кожного шару
+- Middleware (валідація) - цей шар відповідає за перевірку вхідних даних до того, як 
+вони потраплять у контролер. Middleware перевіряє наявність обов'язкових полів та їх
+формат (наприклад, числові значення, валідність email тощо).
+- Controller (оркестрація) - контролер більше не містить бізнес-логіки. Його завдання - 
+прийняти HTTP-запит, викликати необхідний метод сервісу та повернути сформовану 
+відповідь клієнту, використовуючи DTO.
+- Service (бізнес-логіка) - сервіс інкапсулює всю логіку роботи з сутністю. Він 
+взаємодіє з репозиторієм, обробляє специфічні помилки бази даних (наприклад, дублікати 
+записів) і повертає чисті дані.
+- Repository (доступ до даних) - відповідає за безпосереднє виконання запитів до бази 
+даних через ORM (TypeORM). Сервіс використовує репозиторій для виконання операцій CRUD.
+- ResponseDTO (Data Transfer Object) - використовується для формування контрольованої 
+відповіді API. Дозволяє приховати службові поля (такі як created_at, updated_at) і 
+віддавати клієнту лише публічні дані.
+
+## Приклади реалізації
+### Middleware-функція
+```ts
+import { Request, Response, NextFunction } from 'express';
+import validator from 'validator';
+
+import { CustomError } from '../../../utils/response/custom-error/CustomError';
+
+export const validatorCreateHotel = async (req: Request, res: Response, next: NextFunction) => {
+  const { name, location, stars } = req.body;
+  const errors: string[] = [];
+
+  if (!name || validator.isEmpty(name)) {
+    errors.push('Hotel name is required');
+  }
+
+  if (!location || validator.isEmpty(location)) {
+    errors.push('Location is required');
+  }
+
+  if (stars !== undefined) {
+    if (!validator.isInt(String(stars), { min: 1, max: 5 })) {
+      errors.push('Stars must be an integer between 1 and 5');
+    }
+  }
+
+  if (errors.length > 0) {
+    const customError = new CustomError(400, 'Validation', 'Insert validation failed', errors);
+    return next(customError);
+  }
+
+  return next();
+};
+```
+
+### ResponseDTO
+```ts
+import { Hotel } from '../orm/entities/hotels/Hotel';
+
+export class HotelResponseDTO {
+  id: number;
+  name: string;
+  location: string;
+  description: string;
+  policy: string;
+  stars: number;
+
+  constructor(hotel: Hotel) {
+    this.id = hotel.hotel_id;
+    this.name = hotel.name;
+    this.location = hotel.location;
+    this.description = hotel.description;
+    this.policy = hotel.policy;
+    this.stars = hotel.stars;
+  }
+}
+```
+
+### Сервіс-клас
+```ts
+import { getRepository } from 'typeorm';
+
+import { Hotel } from '../orm/entities/hotels/Hotel';
+import { CustomError } from '../utils/response/custom-error/CustomError';
+
+export class HotelService {
+  private hotelRepository = getRepository(Hotel);
+
+  async findAll(): Promise<Hotel[]> {
+    return await this.hotelRepository.find({
+      relations: ['rooms', 'employees', 'services', 'bookings'],
+    });
+  }
+
+  async findOne(id: number): Promise<Hotel> {
+    const hotel = await this.hotelRepository.findOne({
+      where: { hotel_id: id },
+      relations: ['rooms', 'employees', 'services', 'bookings'],
+    });
+
+    if (!hotel) {
+      throw new CustomError(404, 'General', `Hotel with id:${id} not found.`, ['Hotel not found.']);
+    }
+    return hotel;
+  }
+
+  async create(hotelData: Partial<Hotel>): Promise<Hotel> {
+    try {
+      const hotel = this.hotelRepository.create(hotelData);
+      return await this.hotelRepository.save(hotel);
+    } catch (err) {
+      if (err.code === '23505') {
+        throw new CustomError(409, 'General', 'Hotel name or location must be unique', [
+          'Name and location must be unique.',
+        ]);
+      }
+      throw new CustomError(400, 'Raw', 'Error creating hotel', null, err);
+    }
+  }
+
+  async update(id: number, updateData: Partial<Hotel>): Promise<Hotel> {
+    const hotel = await this.findOne(id); // Reuse findOne logic
+
+    try {
+      Object.assign(hotel, updateData);
+      return await this.hotelRepository.save(hotel);
+    } catch (err) {
+      if (err.code === '23505') {
+        throw new CustomError(409, 'General', 'Hotel name or location must be unique', [
+          'Name and location must be unique.',
+        ]);
+      }
+      throw new CustomError(400, 'Raw', 'Error updating hotel', null, err);
+    }
+  }
+
+  async delete(id: number): Promise<void> {
+    const hotel = await this.findOne(id);
+    await this.hotelRepository.remove(hotel);
+  }
+}
+}
+```
+## Скріншоти з Postman
+### Запит з некоректними даними
+![bad request](images/pw-6/validation_hotels_bad_request.png)
+### Успішний запит
+![good_request](images/pw-6/validation_hotels.png)
+
+
