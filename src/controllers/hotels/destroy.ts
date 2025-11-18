@@ -1,27 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
-import { getRepository } from 'typeorm';
-import { Hotel } from 'orm/entities/hotels/Hotel';
-import { CustomError } from 'utils/response/custom-error/CustomError';
+
+import { HotelService } from '../../services/HotelService';
 
 export const destroy = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
-
-  const hotelRepository = getRepository(Hotel);
+  const hotelService = new HotelService();
 
   try {
-    const hotel = await hotelRepository.findOne({
-      where: { hotel_id: Number(id) },
-    });
-
-    if (!hotel) {
-      const customError = new CustomError(404, 'General', `Hotel with id:${id} not found.`, ['Hotel not found.']);
-      return next(customError);
-    }
-
-    await hotelRepository.remove(hotel);
+    await hotelService.delete(Number(id));
     res.customSuccess(200, 'Hotel deleted');
   } catch (err) {
-    const customError = new CustomError(400, 'Raw', 'Error deleting hotel', null, err);
-    return next(customError);
+    return next(err);
   }
 };

@@ -1,26 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
-import { getRepository } from 'typeorm';
 
-import { Hotel } from 'orm/entities/hotels/Hotel';
-import { CustomError } from 'utils/response/custom-error/CustomError';
+import { HotelResponseDTO } from '../../dto/HotelResponseDTO';
+import { HotelService } from '../../services/HotelService';
+
 
 export const create = async (req: Request, res: Response, next: NextFunction) => {
-  const hotelRepository = getRepository(Hotel);
-  const hotelData = req.body;
-
+  const hotelService = new HotelService();
   try {
-    const hotel = hotelRepository.create(hotelData);
-    const savedHotel = await hotelRepository.save(hotel);
-
-    res.customSuccess(201, 'Hotel created', savedHotel);
+    const newHotel = await hotelService.create(req.body);
+    res.customSuccess(201, 'Hotel created', new HotelResponseDTO(newHotel));
   } catch (err) {
-    if (err.code === '23505') {
-      const customError = new CustomError(409, 'General', 'Hotel name or location must be unique', [
-        'Name and location must be unique.',
-      ]);
-      return next(customError);
-    }
-    const customError = new CustomError(400, 'Raw', 'Error creating hotel', null, err);
-    return next(customError);
+    return next(err);
   }
 };
