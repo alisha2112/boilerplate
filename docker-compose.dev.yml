@@ -18,6 +18,7 @@ services:
       - .env
     ports:
       - '4000:4000'
+      - '9229:9229'
     depends_on:
       - db_postgres
     links:
