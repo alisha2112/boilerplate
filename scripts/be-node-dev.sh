@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 echo "Install bash and execute 'wait-for-it.sh' script"
 apk add --update bash
